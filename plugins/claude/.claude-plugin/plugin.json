@@ -1,5 +1,8 @@
 {
   "name": "chisel",
   "version": "1.0.0",
-  "description": "Connect Claude Code to open Chisel projects through Chisel's approval-gated MCP server."
+  "description": "Connect Claude Code to open Chisel projects through Chisel's approval-gated MCP server.",
+  "author": {
+    "name": "Chisel"
+  }
 }
