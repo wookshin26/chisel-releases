@@ -1,0 +1,27 @@
+{
+  "name": "chisel",
+  "version": "1.0.0",
+  "description": "Connect Codex to open Chisel projects through Chisel's approval-gated MCP server.",
+  "author": {
+    "name": "Chisel"
+  },
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Chisel",
+    "shortDescription": "Approval-gated research workflows in Chisel",
+    "longDescription": "Connect Codex to open Chisel projects for supervised LaTeX, review, numerics, figure, literature, and manuscript workflows.",
+    "developerName": "Chisel",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write",
+      "Interactive"
+    ],
+    "defaultPrompt": [
+      "Show me the status of papers open in Chisel.",
+      "Compile the active Chisel paper and propose a minimal fix.",
+      "Draft a reply to the active Chisel review round."
+    ]
+  }
+}

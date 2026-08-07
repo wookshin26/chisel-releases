@@ -1,0 +1,10 @@
+interface:
+  display_name: "Chisel Figure"
+  short_description: "Build and publish supervised research figures"
+  default_prompt: "Use $chisel-figure to generate or revise a research figure through the Chisel approval pipeline."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "chisel"
+      description: "Chisel desktop app approval-gated MCP server"

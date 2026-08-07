@@ -1,0 +1,14 @@
+{
+  "name": "chisel",
+  "plugins": [
+    {
+      "name": "chisel",
+      "source": {
+        "source": "local",
+        "path": "./plugins/codex"
+      },
+      "description": "Connect Codex to open Chisel projects through Chisel's approval-gated MCP server.",
+      "version": "1.0.0"
+    }
+  ]
+}

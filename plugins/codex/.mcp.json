@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "chisel": {
+      "command": "node",
+      "args": [
+        "${PLUGIN_ROOT}/bin/chisel-mcp.mjs"
+      ]
+    }
+  }
+}

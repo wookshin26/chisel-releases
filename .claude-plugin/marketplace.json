@@ -1,0 +1,14 @@
+{
+  "name": "chisel",
+  "owner": {
+    "name": "Chisel"
+  },
+  "plugins": [
+    {
+      "name": "chisel",
+      "source": "./plugins/claude",
+      "description": "Connect Claude Code to open Chisel projects through Chisel's approval-gated MCP server.",
+      "version": "1.0.0"
+    }
+  ]
+}

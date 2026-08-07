@@ -1,0 +1,10 @@
+interface:
+  display_name: "Chisel Compile Fix"
+  short_description: "Compile LaTeX and park evidence-based fixes"
+  default_prompt: "Use $chisel-compile-fix to compile the active Chisel paper and propose a minimal repair."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "chisel"
+      description: "Chisel desktop app approval-gated MCP server"
