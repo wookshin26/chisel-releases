@@ -1,7 +1,7 @@
 interface:
   display_name: "Chisel Referee Assignments"
-  short_description: "Assignment metadata and in-window AI-draft request relay"
-  default_prompt: "Use $chisel-referee to check Monolith review assignments and relay an AI-draft request into the open assignment window."
+  short_description: "Assignment metadata, granted manuscript reading, and in-window AI-draft relay"
+  default_prompt: "Use $chisel-referee to check Monolith review assignments, request a human-granted manuscript read, and help draft the review while execution and submission stay in the assignment window."
 
 dependencies:
   tools:
