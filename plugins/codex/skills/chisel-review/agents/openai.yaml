@@ -1,0 +1,10 @@
+interface:
+  display_name: "Chisel External Review"
+  short_description: "Supervised external referee-review cycle with parked approvals"
+  default_prompt: "Use $chisel-review to import a pasted referee report and draft the plan, point responses, response letter, and referee diff through Chisel approvals."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "chisel"
+      description: "Chisel desktop app approval-gated MCP server"
