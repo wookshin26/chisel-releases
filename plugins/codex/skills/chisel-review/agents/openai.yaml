@@ -1,7 +1,7 @@
 interface:
-  display_name: "Chisel External Review"
-  short_description: "Supervised external referee-review cycle with parked approvals"
-  default_prompt: "Use $chisel-review to import a pasted referee report and draft the plan, point responses, response letter, and referee diff through Chisel approvals."
+  display_name: "Chisel Review"
+  short_description: "External referee cycle and internal persona review with parked approvals"
+  default_prompt: "Use $chisel-review to run Chisel review work — import external referee reports with human attestation, draft the plan, point responses, response letter, and referee diff, or run internal AI-persona review against an immutable snapshot."
 
 dependencies:
   tools:

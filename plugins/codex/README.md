@@ -24,12 +24,12 @@ After installation, invoke a bundled skill explicitly with `$` or let Codex sele
 
 - `$chisel-status`
 - `$chisel-compile-fix`
-- `$chisel-review-reply`
+- `$chisel-review`
+- `$chisel-referee`
 - `$chisel-experiment`
 - `$chisel-figure`
 - `$chisel-literature`
 - `$chisel-manuscript`
-- `$chisel-internal-review`
 
 ## First smoke test
 

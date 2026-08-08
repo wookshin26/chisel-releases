@@ -8,7 +8,7 @@
         "path": "./plugins/codex"
       },
       "description": "Connect Codex to open Chisel projects through Chisel's approval-gated MCP server.",
-      "version": "1.0.2"
+      "version": "1.0.3"
     }
   ]
 }

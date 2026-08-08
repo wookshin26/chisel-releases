@@ -30,12 +30,12 @@ Current Claude Code releases namespace plugin skills. Invoke:
 
 - `/chisel:chisel-status`
 - `/chisel:chisel-compile-fix`
-- `/chisel:chisel-review-reply`
+- `/chisel:chisel-review`
+- `/chisel:chisel-referee`
 - `/chisel:chisel-experiment`
 - `/chisel:chisel-figure`
 - `/chisel:chisel-literature`
 - `/chisel:chisel-manuscript`
-- `/chisel:chisel-internal-review`
 
 Some older clients display the corresponding unscoped aliases, such as `/chisel-status` instead of `/chisel:chisel-status`.
 
