@@ -47,8 +47,8 @@ Then run `/chisel:chisel-status` in a project-connected session. Update later wi
 **Codex CLI** (plugin v1.0.4, requires a Codex release with plugin support; commands may vary by version):
 
 ```
-codex marketplace add github:wookshin26/chisel-releases
-codex plugin add chisel
+codex plugin marketplace add wookshin26/chisel-releases
+codex plugin add chisel@chisel
 ```
 
 Then invoke `$chisel-status`. The connectors never read your API keys; they talk to the local Chisel app only, and every edit or run is approved inside Chisel.
