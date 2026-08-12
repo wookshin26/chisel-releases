@@ -29,6 +29,7 @@ After installation, invoke a bundled skill explicitly with `$` or let Codex sele
 - `$chisel-experiment`
 - `$chisel-figure`
 - `$chisel-literature`
+- `$chisel-idea`
 - `$chisel-manuscript`
 
 ## First smoke test

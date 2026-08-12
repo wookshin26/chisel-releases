@@ -1,0 +1,10 @@
+interface:
+  display_name: "Chisel Idea Workspace"
+  short_description: "Notes, scratch LaTeX, and authored note-to-manuscript promotion"
+  default_prompt: "Use $chisel-idea to draft Chisel idea notes, test LaTeX in scratch, and restructure a note into manuscript prose promoted into Main for approval."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "chisel"
+      description: "Chisel desktop app approval-gated MCP server"

@@ -1,6 +1,6 @@
 {
   "name": "chisel",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Connect Claude Code to open Chisel projects through Chisel's approval-gated MCP server.",
   "author": {
     "name": "Chisel"

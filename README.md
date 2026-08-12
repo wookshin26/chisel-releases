@@ -35,7 +35,7 @@ Chisel does not bundle these tools.
 
 This repository also serves as the plugin marketplace for Chisel's approval-gated MCP connectors until they are listed in the official directories. Requirements: Apple Silicon Mac, Node.js 20+, and Chisel running with **Settings → MCP server** enabled.
 
-**Claude Code** (plugin v1.0.4):
+**Claude Code** (plugin v1.0.5):
 
 ```
 /plugin marketplace add wookshin26/chisel-releases
@@ -44,11 +44,11 @@ This repository also serves as the plugin marketplace for Chisel's approval-gate
 
 Then run `/chisel:chisel-status` in a project-connected session. Update later with `/plugin marketplace update`.
 
-**Codex CLI** (plugin v1.0.4, requires a Codex release with plugin support; commands may vary by version):
+**Codex CLI** (plugin v1.0.5, requires a Codex release with plugin support; commands may vary by version):
 
 ```
-codex plugin marketplace add wookshin26/chisel-releases
-codex plugin add chisel@chisel
+codex marketplace add github:wookshin26/chisel-releases
+codex plugin add chisel
 ```
 
 Then invoke `$chisel-status`. The connectors never read your API keys; they talk to the local Chisel app only, and every edit or run is approved inside Chisel.
