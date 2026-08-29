@@ -3,8 +3,9 @@
     "chisel": {
       "command": "node",
       "args": [
-        "${PLUGIN_ROOT}/bin/chisel-mcp.mjs"
-      ]
+        "bin/chisel-mcp.mjs"
+      ],
+      "cwd": "."
     }
   }
 }

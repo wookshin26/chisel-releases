@@ -18,7 +18,7 @@ From the Chisel repository root, materialize the bridge's pinned runtime depende
 npm --prefix plugin/codex ci --omit=dev --ignore-scripts
 ```
 
-The source package is ready to place at `plugins/chisel` inside a Codex personal or repository marketplace. Its manifest is `.codex-plugin/plugin.json`; its MCP entry uses Codex's canonical `${PLUGIN_ROOT}` path. Installing it does not require copying secrets into Codex.
+The source package is ready to place at `plugins/chisel` inside a Codex personal or repository marketplace. Its manifest is `.codex-plugin/plugin.json`; its MCP entry sets a plugin-relative working directory and launches `bin/chisel-mcp.mjs` from there. Installing it does not require copying secrets into Codex.
 
 After installation, invoke a bundled skill explicitly with `$` or let Codex select it from the request:
 

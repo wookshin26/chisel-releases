@@ -44,7 +44,7 @@ This repository also serves as the plugin marketplace for Chisel's approval-gate
 
 Then run `/chisel:chisel-status` in a project-connected session. Update later with `/plugin marketplace update`.
 
-**Codex CLI** (plugin v1.0.5, requires a Codex release with plugin support; commands may vary by version):
+**Codex CLI** (plugin v1.0.6, requires a Codex release with plugin support; commands may vary by version):
 
 ```
 codex marketplace add github:wookshin26/chisel-releases

@@ -1,6 +1,6 @@
 {
   "name": "chisel",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Connect Codex to open Chisel projects through Chisel's approval-gated MCP server.",
   "author": {
     "name": "Chisel"
