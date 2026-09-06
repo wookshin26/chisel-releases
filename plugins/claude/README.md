@@ -4,11 +4,11 @@ This plugin connects Claude Code to the MCP server built into the Chisel desktop
 
 ## Requirements
 
-- Apple Silicon Mac (`darwin-arm64`); this is the only v1 discovery-path contract.
+- Apple Silicon Mac (`darwin-arm64`) or Windows 11 x64; these are the v1 discovery-path contracts.
 - Chisel with **Settings → MCP server** enabled.
-- Node.js 20 or newer and Claude Code.
+- Node.js 20 or newer and Claude Code. The bridge is started as `node bin/chisel-mcp.mjs`, so no shebang or executable bit is involved on either OS.
 
-Chisel writes a process-scoped bearer record to `~/Library/Application Support/Chisel/mcp.v1.json` with mode `0600`. The bridge reads this file locally. It watches the containing directory and reconnects automatically when Chisel restarts or rotates the token. The token is never printed by the bridge.
+Chisel writes a process-scoped bearer record to `~/Library/Application Support/Chisel/mcp.v1.json` (macOS, mode `0600`) or `%APPDATA%\Chisel\mcp.v1.json` (Windows, readable by your account only — the bridge checks the file's DACL through PowerShell and refuses a file that Everyone, Users, or Authenticated Users can read). The bridge reads this file locally. It watches the containing directory and reconnects automatically when Chisel restarts or rotates the token. The token is never printed by the bridge.
 
 ## Install and load locally
 
@@ -59,6 +59,6 @@ Tests and non-default app-data layouts can point at another v1 discovery file:
 CHISEL_MCP_CONFIG=/absolute/path/to/mcp.v1.json claude --plugin-dir ./plugin/claude
 ```
 
-The override must still be a v1 JSON file with restrictive permissions (`0600`). It does not add support for a different discovery schema. Windows and Linux paths are intentionally not contracted in v1.
+The override must still be a v1 JSON file with restrictive permissions (`0600` on macOS, a user-private DACL on Windows). It does not add support for a different discovery schema. Linux paths are intentionally not contracted in v1.
 
 Set `CHISEL_MCP_DEBUG=1` only for local troubleshooting. Diagnostics go to stderr and never include the bearer token.

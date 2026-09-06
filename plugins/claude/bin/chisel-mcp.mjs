@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /**
  * Chisel Claude Code bridge.
  *
@@ -8,6 +6,7 @@
  * two lifecycles separate lets Claude Code initialize while Chisel is closed.
  */
 
+import { execFile } from 'node:child_process'
 import fs from 'node:fs'
 import fsp from 'node:fs/promises'
 import os from 'node:os'
@@ -36,7 +35,11 @@ export class DiscoveryError extends Error {
   }
 }
 
-/** Resolve only the v1-supported Apple Silicon macOS discovery location. */
+/**
+ * Resolve the discovery location Chisel writes on this OS: the Apple Silicon macOS path (the
+ * original v1 contract) or `%APPDATA%\Chisel\mcp.v1.json` on Windows. Each branch uses that
+ * platform's own path rules, so the answer does not depend on the host running the bridge.
+ */
 export function resolveDiscoveryPath({
   env = process.env,
   platform = process.platform,
@@ -45,14 +48,90 @@ export function resolveDiscoveryPath({
 } = {}) {
   const override = env.CHISEL_MCP_CONFIG?.trim()
   if (override) return path.resolve(override)
-  if (platform !== 'darwin' || arch !== 'arm64') return null
-  return path.join(home, 'Library', 'Application Support', 'Chisel', 'mcp.v1.json')
+  if (platform === 'darwin') {
+    if (arch !== 'arm64') return null
+    return path.posix.join(home, 'Library', 'Application Support', 'Chisel', 'mcp.v1.json')
+  }
+  if (platform === 'win32') {
+    const appData = env.APPDATA?.trim() || path.win32.join(home, 'AppData', 'Roaming')
+    return path.win32.join(appData, 'Chisel', 'mcp.v1.json')
+  }
+  return null
+}
+
+/** Everyone, Authenticated Users, BUILTIN\Users, Interactive, Anonymous. */
+const BROAD_PRINCIPAL_SIDS = new Map([
+  ['S-1-1-0', 'Everyone'],
+  ['S-1-5-11', 'Authenticated Users'],
+  ['S-1-5-32-545', 'Users'],
+  ['S-1-5-4', 'Interactive'],
+  ['S-1-5-7', 'Anonymous']
+])
+const ACL_PATH_ENV = 'CHISEL_ACL_PATH'
+// The path travels through an environment variable so directory names can never become
+// PowerShell syntax; SIDs (not display names) keep the verdict locale-independent.
+const ACL_SCRIPT = [
+  `$acl = Get-Acl -LiteralPath $env:${ACL_PATH_ENV}`,
+  "'OWNER|' + $acl.GetOwner([System.Security.Principal.SecurityIdentifier]).Value",
+  '$acl.Access | ForEach-Object {',
+  '  $sid = $_.IdentityReference.Translate([System.Security.Principal.SecurityIdentifier]).Value',
+  "  'ACE|{0}|{1}|{2}' -f $sid, $_.AccessControlType, $_.FileSystemRights",
+  '}'
+].join('; ')
+
+/** Pure classification of the `OWNER|sid` / `ACE|sid|type|rights` lines from ACL_SCRIPT. */
+export function classifyDiscoveryAcl(lines) {
+  let owner = ''
+  const broadAccess = []
+  for (const raw of lines) {
+    const line = raw.trim()
+    if (line.startsWith('OWNER|')) {
+      owner = line.slice('OWNER|'.length)
+      continue
+    }
+    if (!line.startsWith('ACE|')) continue
+    const [, sid = '', type = ''] = line.split('|')
+    const broad = BROAD_PRINCIPAL_SIDS.get(sid)
+    if (broad && type === 'Allow' && !broadAccess.includes(broad)) broadAccess.push(broad)
+  }
+  return { owner, broadAccess }
+}
+
+/**
+ * Windows has no 0600: POSIX mode bits are advisory on NTFS, so the discovery file is private
+ * only if its DACL grants nothing to broad groups. The verdict comes from PowerShell's ACL view.
+ */
+export async function verifyWindowsPrivateFile(configPath) {
+  const stdout = await new Promise((resolve, reject) => {
+    execFile(
+      'powershell.exe',
+      ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-Command', ACL_SCRIPT],
+      {
+        encoding: 'utf8',
+        timeout: 15_000,
+        windowsHide: true,
+        env: { ...process.env, [ACL_PATH_ENV]: configPath }
+      },
+      (error, out) => (error ? reject(error) : resolve(out))
+    )
+  })
+  const { owner, broadAccess } = classifyDiscoveryAcl(stdout.split(/\r?\n/u))
+  if (!owner) throw new DiscoveryError('Chisel MCP discovery permissions could not be verified.')
+  if (broadAccess.length > 0) {
+    throw new DiscoveryError(
+      `Chisel MCP discovery must be private to your Windows account (readable by ${broadAccess.join(', ')}).`
+    )
+  }
 }
 
 /** Read and validate the bearer discovery record without ever logging its token. */
-export async function readDiscovery(configPath) {
+export async function readDiscovery(configPath, options = {}) {
+  const platform = options.platform ?? process.platform
+  const verifyPrivateFile = options.verifyPrivateFile ?? verifyWindowsPrivateFile
   if (!configPath) {
-    throw new DiscoveryError('Chisel MCP discovery v1 supports darwin-arm64 only.')
+    throw new DiscoveryError(
+      'Chisel MCP discovery supports macOS (Apple Silicon) and Windows only.'
+    )
   }
   let stat
   try {
@@ -64,7 +143,14 @@ export async function readDiscovery(configPath) {
   if (!stat.isFile() || stat.size > MAX_DISCOVERY_BYTES) {
     throw new DiscoveryError('Chisel MCP discovery is not a valid bounded file.')
   }
-  if ((stat.mode & 0o077) !== 0) {
+  if (platform === 'win32') {
+    try {
+      await verifyPrivateFile(configPath)
+    } catch (error) {
+      if (error instanceof DiscoveryError) throw error
+      throw new DiscoveryError('Chisel MCP discovery permissions could not be verified.')
+    }
+  } else if ((stat.mode & 0o077) !== 0) {
     throw new DiscoveryError('Chisel MCP discovery permissions must be 0600.')
   }
 
@@ -199,7 +285,10 @@ export function classifyRemoteFailure(error) {
   if (code === MCP_REQUEST_TIMEOUT || /timed out|timeout/i.test(message)) {
     return { code: 'call-timeout', retainConnection: true }
   }
-  if (code === MCP_CONNECTION_CLOSED || /ECONNREFUSED|ENOENT|ECONNRESET|socket hang up/i.test(message)) {
+  if (
+    code === MCP_CONNECTION_CLOSED ||
+    /ECONNREFUSED|ENOENT|ECONNRESET|socket hang up/i.test(message)
+  ) {
     return { code: 'app-not-running', retainConnection: false }
   }
   if (/\b(401|403|404)\b/.test(message)) {

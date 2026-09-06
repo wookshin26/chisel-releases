@@ -40,7 +40,7 @@ Chisel does not bundle these tools. The Proof workspace (Lean formal proofs) is 
 
 This repository also serves as the plugin marketplace for Chisel's approval-gated MCP connectors until they are listed in the official directories. Requirements: Apple Silicon Mac, Node.js 20+, and Chisel running with **Settings → MCP server** enabled.
 
-**Claude Code** (plugin v1.0.5):
+**Claude Code** (plugin v1.0.6):
 
 ```
 /plugin marketplace add wookshin26/chisel-releases
