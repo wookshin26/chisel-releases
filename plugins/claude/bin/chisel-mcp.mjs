@@ -71,6 +71,7 @@ const ACL_PATH_ENV = 'CHISEL_ACL_PATH'
 // The path travels through an environment variable so directory names can never become
 // PowerShell syntax; SIDs (not display names) keep the verdict locale-independent.
 const ACL_SCRIPT = [
+  "$ErrorActionPreference = 'Stop'",
   `$acl = Get-Acl -LiteralPath $env:${ACL_PATH_ENV}`,
   "'OWNER|' + $acl.GetOwner([System.Security.Principal.SecurityIdentifier]).Value",
   '$acl.Access | ForEach-Object {',
@@ -102,15 +103,31 @@ export function classifyDiscoveryAcl(lines) {
  * only if its DACL grants nothing to broad groups. The verdict comes from PowerShell's ACL view.
  */
 export async function verifyWindowsPrivateFile(configPath) {
+  // Node can inherit PS7 module paths that Windows PowerShell 5.1 cannot load.
+  // Discovery needs only the modules shipped with the fixed system host.
+  const systemRoot = Object.entries(process.env).find(
+    ([key]) => key.toUpperCase() === 'SYSTEMROOT'
+  )?.[1]
+  const powershellHome = path.win32.join(
+    systemRoot || 'C:\\Windows',
+    'System32',
+    'WindowsPowerShell',
+    'v1.0'
+  )
+  const env = Object.fromEntries(
+    Object.entries(process.env).filter(([key]) => key.toUpperCase() !== 'PSMODULEPATH')
+  )
+  env.PSModulePath = path.win32.join(powershellHome, 'Modules')
+  env[ACL_PATH_ENV] = configPath
   const stdout = await new Promise((resolve, reject) => {
     execFile(
-      'powershell.exe',
+      path.win32.join(powershellHome, 'powershell.exe'),
       ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-Command', ACL_SCRIPT],
       {
         encoding: 'utf8',
         timeout: 15_000,
         windowsHide: true,
-        env: { ...process.env, [ACL_PATH_ENV]: configPath }
+        env
       },
       (error, out) => (error ? reject(error) : resolve(out))
     )
